@@ -101,6 +101,9 @@ class DietFlowTest(unittest.TestCase):
         for rule in app.url_map.iter_rules():
             if rule.rule.startswith("/static"):
                 continue
+            self.assertTrue(
+                hasattr(app.view_functions[rule.endpoint], "__wrapped__"), rule.rule
+            )
             for method in rule.methods:
                 if method in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
                     found.add((rule.rule, method))
