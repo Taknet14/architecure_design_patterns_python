@@ -1,6 +1,6 @@
 # architecure_design_patterns_python
 
-A small calorie app for the architecture and design-patterns labs. One Python file stores activities, workout logs, and a user profile in local JSON files, then asks a public macros service for daily diet targets.
+A small calorie app for the architecture and design-patterns labs. The Flask app stores activities, workout logs, and a user profile in local JSON files, while a shared request decorator updates a Requests singleton for counts and timing. It also asks a public macros service for daily diet targets.
 
 ## What you can achieve
 
@@ -36,7 +36,11 @@ graph TB
         targets[GET targets]
     end
 
-    client --> Handlers
+    wrapper[decorators/request_log.py]
+    requests[Requests singleton]
+
+    client --> wrapper
+    wrapper -->|calls| Handlers
     getAct ~~~ postAct
     postAct ~~~ postLog
     postLog ~~~ undo
@@ -56,14 +60,14 @@ graph TB
     getCal -->|reads| logs3[logs.json]
     getCal -->|reads| a4[activities.json]
     postUser -->|writes| user1[user.json]
-    stats -->|reads| requests[REQUESTS]
+    stats -->|reads| requests
     targets -->|reads| user2[user.json]
     targets -->|reads| logs4[logs.json]
     targets -->|reads| a5[activities.json]
     targets --> bands[LIFESTYLE_ACTIVITY]
     bands --> names[ACTIVITY_FOR_API]
     names -->|calls| macros[Macros API]
-    Handlers -->|each call updates| requests
+    wrapper -->|updates| requests
 ```
 
 ## What it does
